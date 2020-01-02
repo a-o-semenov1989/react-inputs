@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import AppLazyInput from '~c/inputs/lazy';
+import styles from './minmax.module.css';
 
 export default class extends React.Component{
     static defaultProps = {
@@ -13,9 +15,7 @@ export default class extends React.Component{
         onChange: PropTypes.func
     }
 
-    state = {
-        inputValue: this.props.cnt
-    };
+    lazyInput = React.createRef();
 
     increase = () => {
         this.set(this.props.cnt + 1);
@@ -27,27 +27,16 @@ export default class extends React.Component{
 
     set(newCnt){
         let cnt = Math.min(Math.max(newCnt, this.props.min), this.props.max);
-        
-        this.setState({
-            inputValue: cnt
-        });
-
-        // как-то сказать родителю, что cnt обновился
         this.props.onChange(cnt);
+        return cnt;
     }
 
-    setValue(newStr){
-        this.setState({inputValue: newStr});
-    }
+    onChange = (e) => {
+        let cnt = parseInt(e.target.value);
+        let realCnt = this.set(isNaN(cnt) ? this.props.min : cnt);
 
-    applyValue = () => {
-        let cnt = parseInt(this.state.inputValue);
-        this.set(isNaN(cnt) ? this.props.min : cnt);
-    }
-
-    checkEnterKey = (e) => {
-        if(e.keyCode === 13){
-            this.applyValue();
+        if(realCnt.toString() !== e.target.value){
+            this.lazyInput.current.setValue(realCnt);
         }
     }
 
@@ -55,20 +44,14 @@ export default class extends React.Component{
         return (
             <div>
                 <button onClick={this.decrease}>-</button>
-                <input value={this.state.inputValue} 
-                       onChange={(e) => this.setValue(e.target.value)} 
-                       onBlur={this.applyValue}
-                       onKeyUp={this.checkEnterKey}
+                <AppLazyInput
+                    nativeProps={{type: 'text', className: styles.input}}
+                    value={this.props.cnt}
+                    onChange={this.onChange}
+                    ref={this.lazyInput}
                 />
                 <button onClick={this.increase}>+</button>
             </div>
         );
     }
 }
-
-/*
-Some.defaultProps = {
-    min: 1,
-    max: 5
-};
-*/
