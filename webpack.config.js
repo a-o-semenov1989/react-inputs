@@ -10,7 +10,7 @@ let conf = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: 'styles.css',
+            filename: 'styles.css'
         }),
     ],
     module: {
@@ -74,7 +74,15 @@ let conf = {
         }
     },
     devServer: {
-        historyApiFallback: true
+        historyApiFallback: true,
+        overlay: true,
+        proxy: {
+            '/reactcourseapi/**': {
+                target: 'http://faceprog.ru',
+                secure: false,
+                changeOrigin: true
+            }
+        }
     }
 };
 
