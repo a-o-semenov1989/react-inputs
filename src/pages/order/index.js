@@ -21,9 +21,10 @@ import { Link } from 'react-router-dom';
     }
 
     confirm = () => {
-        this.hide();
-        this.props.history.push(routesMap.result);
-        console.log(this.props.history);
+        this.props.stores.order.send().then(() => {
+            this.hide();
+            this.props.history.push(routesMap.result);
+        });
     }
 
     render(){
